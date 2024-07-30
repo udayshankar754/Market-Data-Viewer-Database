@@ -19,9 +19,12 @@ app.use(morgan('dev'))
 //routes 
 
 import dhanRouter from './routes/dhan.routes.js';
+import growwRouter from './routes/groww.routes.js';
+
 
 
 //routes declaration
 app.use("/api/v1/dhan", dhanRouter)
+app.use("/api/v1/groww", growwRouter)
 
 export {app}
