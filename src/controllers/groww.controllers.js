@@ -5,7 +5,7 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 import axios from "axios"
 import { getGrowwModel } from "../models/groww.models.js"
 
-const uploadDhanDataToDb = asyncHandler(async (req, res) => {
+const uploadDhanDataToDbGroww = asyncHandler(async (req, res) => {
   const { token, pageSize } = req.body;
 
   if (!token) {
@@ -84,5 +84,5 @@ const uploadDhanDataToDb = asyncHandler(async (req, res) => {
 
 
 export {
-    uploadDhanDataToDb, 
+  uploadDhanDataToDbGroww, 
 }

@@ -58,7 +58,7 @@ const uploadDhanDataToDb = asyncHandler(async (req, res) => {
   let response = await axios.post(url,body)
   let finalResponse 
   if(response?.data?.data?.length > 0) {
-    let totalCount = response?.data?.tot_rec
+    let totalCount = response?.data?.tot_rec || 10000;
     let reqBody =  {
       "data": {
           "sort": "",
