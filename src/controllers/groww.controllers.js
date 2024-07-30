@@ -4,6 +4,21 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { getGrowwModel } from '../models/groww.models.js';
+import fs from 'fs';
+import path from 'path';
+import XLSX from 'xlsx'; // Import XLSX library
+
+// Function to get the current date and time in the format ddmmyyyyhhmm
+const getFormattedDateTime = () => {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = now.getFullYear();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+
+  return `${day}${month}${year}${hours}${minutes}`;
+};
 
 const uploadDhanDataToDbGroww = asyncHandler(async (req, res) => {
   const { token, pageSize } = req.body;
@@ -36,30 +51,70 @@ const uploadDhanDataToDbGroww = asyncHandler(async (req, res) => {
 
       allPromises.push(
         axios.get(url, { headers: { 'Authorization': `Bearer ${tokenData}` } })
-          .then(response => {
+          .then(async response => {
             const { categoryResponseMap, timeStamp } = response.data;
 
             const categoryPromises = Object.keys(categoryResponseMap).map(async category => {
-              const items = categoryResponseMap[category].items;
+              const items = categoryResponseMap[category]?.items?.map(item => ({
+                gsin: item.gsin,
+                isin: item.company.isin,
+                companyName: item.company.companyName,
+                searchId: item.company.searchId,
+                bseScriptCode: item.company.bseScriptCode,
+                nseScriptCode: item.company.nseScriptCode,
+                companyShortName: item.company.companyShortName,
+                companyUrl: item.company.logoUrl,
+                marketCap: item.company.marketCap,
+                equityType: item.company.equityType,
+                growwContractId: item.company.growwContractId,
+                ltp: item.stats.ltp,
+                close: item.stats.close,
+                dayChange: item.stats.dayChange,
+                dayChangePerc: item.stats.dayChangePerc,
+                high: item.stats.high,
+                low: item.stats.low,
+                yearHighPrice: item.stats.yearHighPrice,
+                yearLowPrice: item.stats.yearLowPrice,
+                lpr: item.stats.lpr,
+                upr: item.stats.upr
+              }));
 
               if (items?.length > 0) {
                 const GrowwModel = getGrowwModel(timeStamp, universe.displayName, category);
 
                 try {
                   await GrowwModel.insertMany(items);
+
+                  const xlsxName = GrowwModel.modelName;
+                  const dateTimeString = getFormattedDateTime();
+                  const directoryPath = path.join('Groww', dateTimeString);
+                  const filePath = path.join(directoryPath, `${xlsxName}.xlsx`);
+
+                  if (!fs.existsSync(directoryPath)) {
+                    fs.mkdirSync(directoryPath, { recursive: true });
+                  }
+
+                  // Create a new workbook and add the worksheet
+                  const workbook = XLSX.utils.book_new();
+                  const worksheet = XLSX.utils.json_to_sheet(items);
+                  XLSX.utils.book_append_sheet(workbook, worksheet, 'Top Gainers');
+
+                  // Write to file
+                  XLSX.writeFile(workbook, filePath);
+
+                  console.log(`Excel file created successfully at ${filePath}`);
                 } catch (err) {
                   throw new ApiError(500, `Failed to insert items for category ${category}`);
                 }
               } else {
                 console.log(`No data found for universe ${universe.universeId} and market trend ${marketTrend.displayName}`);
-                return;
               }
             });
 
             return Promise.all(categoryPromises);
           })
           .catch(err => {
-            console.log(url);
+            console.log(`Failed to fetch data from ${url}`);
             throw new ApiError(500, `Failed to fetch data for universe ${universe.universeId} and market trend ${marketTrend.displayName}`);
           })
       );

@@ -6,71 +6,68 @@ const growwSchema = new Schema(
     gsin: {
       type: String,
     },
-    company: {
-      isin: {
-        type: String,
-      },
-      companyName: {
-        type: String,
-      },
-      searchId: {
-        type: String,
-      },
-      bseScriptCode: {
-        type: String,
-      },
-      nseScriptCode: {
-        type: String,
-      },
-      companyShortName: {
-        type: String,
-      },
-      logoUrl: {
-        type: String,
-      },
-      marketCap: {
-        type: Number,
-      },
-      equityType: {
-        type: String,
-      },
-      growwContractId: {
-        type: String,
-      }
+    isin: {
+      type: String,
     },
-    stats: {
-      ltp: {
-        type: Number,
-        required: true, // Add if 'ltp' is required
-      },
-      close: {
-        type: Number,
-      },
-      dayChange: {
-        type: Number,
-      },
-      dayChangePerc: {
-        type: Number,
-      },
-      high: {
-        type: Number,
-      },
-      low: {
-        type: Number,
-      },
-      yearHighPrice: {
-        type: Number,
-      },
-      yearLowPrice: {
-        type: Number,
-      },
-      lpr: {
-        type: Number,
-      },
-      upr: {
-        type: Number,
-      },
-    }
+    companyName: {
+      type: String,
+    },
+    searchId: {
+      type: String,
+    },
+    bseScriptCode: {
+      type: String,
+    },
+    nseScriptCode: {
+      type: String,
+    },
+    companyShortName: {
+      type: String,
+    },
+    companyUrl: {
+      type: String,
+    },
+    marketCap: {
+      type: Number,
+    },
+    equityType: {
+      type: String,
+    },
+    growwContractId: {
+      type: String,
+    },
+    ltp: {
+      type: Number,
+      required: true, // Add if 'ltp' is required
+    },
+    close: {
+      type: Number,
+    },
+    dayChange: {
+      type: Number,
+    },
+    dayChangePerc: {
+      type: Number,
+    },
+    high: {
+      type: Number,
+    },
+    low: {
+      type: Number,
+    },
+    yearHighPrice: {
+      type: Number,
+    },
+    yearLowPrice: {
+      type: Number,
+    },
+    lpr: {
+      type: Number,
+    },
+    upr: {
+      type: Number,
+    },
+    
   },
   {
     timestamps: true,
