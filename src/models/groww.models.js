@@ -1,5 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
+// Define your schema
 const growwSchema = new Schema(
   {
     gsin: {
@@ -106,15 +107,21 @@ const getDateCollectionName = (timestamp, marketUniverse, category) => {
   }, '');
 
   const sanitizedCategory = category.replace(/\s+/g, '_').toUpperCase();
-
   const sanitizedMarketUniverse = marketUniverse.replace(/\s+/g, '_').toUpperCase();
 
   return `groww_${dateString}_${sanitizedMarketUniverse}_${sanitizedCategory}`;
 };
 
-const getGrowwModel = (timestamp,marketUniverse, category) => {
+const getGrowwModel = (timestamp, marketUniverse, category) => {
   const collectionName = getDateCollectionName(timestamp, marketUniverse, category);
-  return mongoose.model('Groww', growwSchema, collectionName);
+
+  // Check if the model is already registered
+  if (mongoose.modelNames().includes(collectionName)) {
+    return mongoose.model(collectionName);
+  }
+
+  // Register a new model
+  return mongoose.model(collectionName, growwSchema, collectionName);
 };
 
 export { getGrowwModel };
